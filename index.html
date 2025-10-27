@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumus Matematika Lengkap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Konfigurasi MathJax ditempatkan di <head> sebelum script utama
+        // Ini memastikan konfigurasi dimuat sebelum MathJax mencoba merender
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            startup: {
+                // Menunggu dokumen siap sebelum melakukan typesetting awal
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .category-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+        .formula-card {
+            transition: all 0.3s ease;
+        }
+        .formula-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .active-category {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+            font-weight: 600; /* semi-bold */
+        }
+        .active-category:hover {
+            background-color: #2563eb; /* bg-blue-700 */
+        }
+        .search-highlight {
+            background-color: #fef08a; /* bg-yellow-200 */
+            color: #713f12; /* text-yellow-900 */
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+        /* Mencegah highlight merusak layout MathJax */
+        .formula-display {
+            display: block;
+            overflow-x: auto; /* Mengatasi rumus yang panjang */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* CSS untuk Fitur "Lihat Contoh" */
+        .example-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-out;
+            border-top: 1px dashed #e5e7eb; /* border-gray-200 */
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .example-content.example-visible {
+            max-height: 1000px; /* Cukup besar untuk semua konten */
+            opacity: 1;
+            margin-top: 1rem; /* mt-4 */
+            padding-top: 1rem; /* pt-4 */
+        }
+        .example-toggle-btn .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+        .example-toggle-btn.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* --- CSS untuk Kategori Collapsible --- */
+        .category-content {
+            /* Mulai dalam keadaan tersembunyi */
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .category-content.visible {
+            /* Status saat terlihat */
+            max-height: 5000px; /* Cukup besar untuk semua konten */
+            opacity: 1;
+            margin-top: 1.5rem; /* mt-6 */
+        }
+        .category-toggle-btn .category-chevron {
+            transition: transform 0.3s ease;
+            /* Mulai menunjuk ke bawah (tertutup) */
+            transform: rotate(0deg); 
+        }
+        .category-toggle-btn.active .category-chevron {
+            /* Menunjuk ke atas (terbuka) */
+            transform: rotate(180deg); 
+        }
+        /* --- Akhir CSS Kategori Collapsible --- */
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-blue-600 text-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <h1 class="text-2xl md:text-3xl font-bold mb-4 md:mb-0 text-center md:text-left">
+                    <i class="fas fa-square-root-alt mr-2"></i>Advanced Mathematics Formula
+                </h1>
+                <div class="w-full md:w-2/5 lg:w-1/3">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Cari rumus (cth: pythagoras, integral)" 
+                               class="w-full px-4 py-2 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                               aria-label="Cari rumus">
+                        <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="lg:w-1/4">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h2 class="text-xl font-bold mb-4 text-gray-800">Kategori Rumus</h2>
+                    <ul class="space-y-2" id="categoryList">
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="all">
+                                <i class="fas fa-th-large mr-2 w-5 text-center"></i>Semua Rumus
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="aritmetika">
+                                <i class="fas fa-plus-minus mr-2 w-5 text-center"></i>Aritmetika
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="algebra">
+                                <i class="fas fa-calculator mr-2 w-5 text-center"></i>Aljabar
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="geometry">
+                                <i class="fas fa-shapes mr-2 w-5 text-center"></i>Geometri
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="geo-analitik">
+                                <i class="fas fa-vector-square mr-2 w-5 text-center"></i>Geometri Analitik
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="trigonometry">
+                                <i class="fas fa-circle mr-2 w-5 text-center"></i>Trigonometri
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="kalkulus">
+                                <i class="fas fa-infinity mr-2 w-5 text-center"></i>Kalkulus
+                            </button>
+                        </li>
+                         <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="pd">
+                                <i class="fas fa-water mr-2 w-5 text-center"></i>Persamaan Diferensial
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="statistika-probabilitas">
+                                <i class="fas fa-chart-bar mr-2 w-5 text-center"></i>Statistika & Probabilitas
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="matriks">
+                                <i class="fas fa-th mr-2 w-5 text-center"></i>Matriks & Vektor
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="kombinatorika-teobil">
+                                <i class="fas fa-dice mr-2 w-5 text-center"></i>Kombinatorika & Teori Bil.
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="transformasi">
+                                <i class="fas fa-wave-square mr-2 w-5 text-center"></i>Transformasi
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="analisis-kompleks">
+                                <i class="fas fa-magic mr-2 w-5 text-center"></i>Analisis Kompleks
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="geo-differensial">
+                                <i class="fas fa-bezier-curve mr-2 w-5 text-center"></i>Geometri Differensial
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-btn w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ease-in-out hover:bg-blue-100" data-category="analisis-numerik">
+                                <i class="fas fa-laptop-code mr-2 w-5 text-center"></i>Analisis Numerik
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <section class="lg:w-3/4">
+
+                <div id="aritmetika" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-orange-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-plus-minus mr-2 text-orange-500"></i>Aritmetika</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persentase persen diskon bunga">
+                            <h3 class="text-xl font-semibold mb-3 text-orange-600">Persentase</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \text{Persen} (\%) = \left( \frac{\text{Bagian}}{\text{Keseluruhan}} \right) \times 100\% \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menyatakan suatu bagian dari seratus. Sangat umum digunakan dalam keuangan dan statistik.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung diskon. Jika baju seharga Rp 200.000 mendapat diskon 20%, besar diskonnya adalah $(20 / 100) \times 200.000 = $ Rp 40.000.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="bunga tunggal pinjaman investasi">
+                            <h3 class="text-xl font-semibold mb-3 text-orange-600">Bunga Tunggal</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \text{Bunga} = P \times r \times t \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung bunga yang diperoleh hanya dari modal awal ($P$) dengan suku bunga ($r$) per periode selama ($t$) periode.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menabung Rp 1.000.000 di bank dengan bunga tunggal 5% per tahun. Setelah 2 tahun, bunganya adalah $1.000.000 \times 0.05 \times 2 = $ Rp 100.000.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="algebra" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-calculator mr-2 text-blue-500"></i>Aljabar</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="rumus kuadrat persamaan kuadrat abc">
+                            <h3 class="text-xl font-semibold mb-3 text-blue-600">Rumus Kuadrat (ABC)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Digunakan untuk mencari akar-akar persamaan kuadrat \(ax^2 + bx + c = 0\).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam fisika, rumus ini digunakan untuk menemukan waktu ($t$) saat sebuah benda yang dilempar ke atas mencapai tanah kembali, di mana persamaannya sering berbentuk kuadratik.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema pythagoras pitagoras segitiga siku-siku">
+                            <h3 class="text-xl font-semibold mb-3 text-blue-600">Teorema Pythagoras</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[a^2 + b^2 = c^2\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan panjang sisi-sisi segitiga siku-siku, di mana \(c\) adalah sisi miring.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Seorang tukang kayu memastikan sudut lemari benar-benar 90° dengan mengukur 30cm di satu sisi dan 40cm di sisi lain; jika jarak diagonalnya tepat 50cm ($30^2 + 40^2 = 50^2$), maka sudutnya siku-siku.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="diskriminan persamaan kuadrat">
+                            <h3 class="text-xl font-semibold mb-3 text-blue-600">Diskriminan</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[D = b^2 - 4ac\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menentukan jenis akar persamaan kuadrat \(ax^2 + bx + c = 0\). (D>0: 2 akar real, D=0: 1 akar real, D<0: akar imajiner).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam optimasi bisnis, jika $D < 0$ untuk fungsi profit, itu bisa berarti tidak ada titik impas (break-even point) dan perusahaan selalu rugi atau selalu untung.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="logaritma sifat logaritma">
+                            <h3 class="text-xl font-semibold mb-3 text-blue-600">Sifat Logaritma</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\log_b(mn) = \log_b m + \log_b n\]
+                                \[\log_b(m^n) = n \log_b m\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menyederhanakan perhitungan perkalian menjadi penjumlahan, dan pemangkatan menjadi perkalian.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Skala Richter (gempa) dan pH (keasaman) adalah skala logaritmik. Gempa 7 SR 10 kali lebih kuat dari 6 SR, bukan 1 kali lebih kuat. Ini karena $\log(10) = 1$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="bunga majemuk eksponensial">
+                            <h3 class="text-xl font-semibold mb-3 text-blue-600">Bunga Majemuk</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ A = P \left( 1 + \frac{r}{n} \right)^{nt} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung jumlah akhir ($A$) dari investasi ($P$) setelah ($t$) tahun dengan bunga ($r$) yang dimajemukkan ($n$) kali per tahun. Ini adalah fungsi eksponensial.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menginvestasikan Rp 1.000.000 (P) dengan bunga 10% (r=0.1) per tahun (n=1) selama 2 tahun (t=2). Tahun pertama berbunga jadi Rp 1.100.000. Tahun kedua, bunga dihitung dari Rp 1.100.000, bukan Rp 1.000.000.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="geometry" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-green-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-shapes mr-2 text-green-500"></i>Geometri</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="luas lingkaran">
+                            <h3 class="text-xl font-semibold mb-3 text-green-600">Luas Lingkaran</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[L = \pi r^2\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung luas lingkaran dengan jari-jari \(r\).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung berapa banyak adonan yang dibutuhkan untuk membuat pizza dengan diameter 30cm (jari-jari 15cm). Luasnya adalah $\pi \times 15^2 \approx 707 \text{ cm}^2$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="volume bola">
+                            <h3 class="text-xl font-semibold mb-3 text-green-600">Volume Bola</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[V = \frac{4}{3} \pi r^3\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung volume bola dengan jari-jari \(r\).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung kapasitas tangki gas berbentuk bola, atau berapa banyak udara di dalam bola basket.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="luas permukaan kubus">
+                            <h3 class="text-xl font-semibold mb-3 text-green-600">Luas Permukaan Kubus</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[L = 6s^2\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung total luas keenam sisi kubus dengan panjang sisi \(s\).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung berapa banyak kertas kado yang dibutuhkan untuk membungkus kado berbentuk kubus dengan sisi 10cm. Luasnya adalah $6 \times (10 \text{ cm})^2 = 600 \text{ cm}^2$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="volume tabung silinder">
+                            <h3 class="text-xl font-semibold mb-3 text-green-600">Volume Tabung</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[V = \pi r^2 t\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung volume tabung (silinder) dengan jari-jari alas \(r\) dan tinggi \(t\).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung kapasitas kaleng minuman. Jika jari-jari alas 3cm dan tinggi 10cm, volumenya adalah $\pi \times 3^2 \times 10 \approx 282.7 \text{ cm}^3$ (atau 282.7 mL).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="geo-analitik" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-cyan-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-vector-square mr-2 text-cyan-500"></i>Geometri Analitik</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="jarak antara dua titik 2d 3d">
+                            <h3 class="text-xl font-semibold mb-3 text-cyan-600">Jarak Antara Dua Titik (2D)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung jarak lurus (Euclidean) antara titik $(x_1, y_1)$ dan $(x_2, y_2)$ pada bidang Kartesius.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam sistem GPS, menghitung jarak antara dua lokasi pada peta. Jika Anda di (1, 2) dan teman Anda di (4, 6), jaraknya adalah $\sqrt{(4-1)^2 + (6-2)^2} = \sqrt{3^2 + 4^2} = \sqrt{25} = 5$ unit.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan garis lurus gradien">
+                            <h3 class="text-xl font-semibold mb-3 text-cyan-600">Persamaan Garis Lurus</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ y = mx + c \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mendefinisikan garis lurus di mana ($m$) adalah gradien (kemiringan) dan ($c$) adalah perpotongan sumbu-y.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Memprediksi biaya. Jika biaya sewa mobil $c = 50.000$ (biaya tetap) dan $m = 2.000$ per km (x). Persamaannya $y = 2000x + 50000$. Jika menempuh 100km, biayanya $y = 2000(100) + 50000 = $ Rp 250.000.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="koordinat polar kartesius">
+                            <h3 class="text-xl font-semibold mb-3 text-cyan-600">Koordinat Polar</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ x = r \cos \theta \]
+                                \[ y = r \sin \theta \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengubah koordinat dari sistem polar $(r, \theta)$ ke sistem kartesius $(x, y)$. Berguna untuk sistem yang memiliki simetri lingkaran.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam robotika, lengan robot sering digerakkan dengan $(r, \theta)$ (panjang lengan dan sudut putar), tetapi posisinya di dunia nyata dihitung sebagai $(x, y)$.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="koordinat silinder bola">
+                            <h3 class="text-xl font-semibold mb-3 text-cyan-600">Koordinat Bola (Spherical)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ x = \rho \sin \phi \cos \theta \]
+                                \[ y = \rho \sin \phi \sin \theta \]
+                                \[ z = \rho \cos \phi \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengubah koordinat bola $(\rho, \theta, \phi)$ ke kartesius $(x, y, z)$. Penting dalam fisika dan integral lipat tiga.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan untuk menentukan lokasi di permukaan Bumi menggunakan Lintang ($\phi$), Bujur ($\theta$), dan Jari-jari ($\rho$).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="trigonometry" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-purple-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-circle mr-2 text-purple-500"></i>Trigonometri</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="identitas pythagoras trigonometri sin cos">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-600">Identitas Pythagoras</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\sin^2 \theta + \cos^2 \theta = 1\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Hubungan fundamental antara sinus dan cosinus suatu sudut $\theta$ dalam lingkaran satuan.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam grafika komputer, jika Anda tahu posisi x ($\cos \theta$) dari suatu titik di lingkaran, Anda bisa langsung mencari posisi y ($\sin \theta$) tanpa menghitung sudutnya, $\sin \theta = \sqrt{1 - \cos^2 \theta}$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="sinus jumlah sudut sin a+b">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-600">Sinus Jumlah Sudut</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\sin(A + B) = \sin A \cos B + \cos A \sin B\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung sinus dari penjumlahan dua sudut. Sangat penting dalam analisis gelombang dan fisika.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan dalam teknik elektro untuk menganalisis superposisi (penjumlahan) dua gelombang AC (arus bolak-balik) yang memiliki fasa berbeda.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="aturan sinus segitiga">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-600">Aturan Sinus</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan panjang sisi segitiga ($a, b, c$) dengan sinus sudut di hadapannya ($A, B, C$).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam survei tanah (pemetaan), jika Anda tahu jarak satu sisi (misal, $a=100$m) dan dua sudut ($A=30^\circ, B=70^\circ$), Anda bisa menghitung panjang sisi $b$ tanpa mengukurnya langsung.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="aturan cosinus kosinus segitiga">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-600">Aturan Cosinus</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ c^2 = a^2 + b^2 - 2ab \cos C \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Generalisasi dari Teorema Pythagoras. Digunakan untuk mencari panjang sisi ketiga jika dua sisi dan sudut apitnya diketahui.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam navigasi, jika kapal berlayar 10km (a), lalu berbelok 120° ($C$) dan berlayar 8km (b), rumus ini bisa menghitung jarak lurus ($c$) kapal dari titik awal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="kalkulus" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-red-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-infinity mr-2 text-red-500"></i>Kalkulus</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="limit definisi turunan">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Definisi Limit (Turunan)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Konsep dasar turunan, yang mengukur laju perubahan sesaat dari suatu fungsi $f(x)$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika $f(x)$ adalah posisi mobil pada waktu $x$, maka $f'(x)$ (turunannya) adalah kecepatan sesaat mobil tersebut, seperti yang terlihat di speedometer pada waktu $x$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="turunan dasar kalkulus derivative power rule">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Turunan (Aturan Pangkat)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\frac{d}{dx}(x^n) = n x^{n-1}\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Aturan paling umum untuk menghitung turunan fungsi polinomial.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika fungsi biaya produksi adalah $C(x) = x^2 + 10x$ (biaya untuk $x$ unit), maka biaya marjinal (biaya tambahan 1 unit) adalah turunannya, $C'(x) = 2x + 10$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="aturan rantai turunan chain rule">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Aturan Rantai</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx}\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Digunakan untuk menurunkan fungsi komposisi, yaitu fungsi di dalam fungsi (misal $y = f(g(x))$).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Balon mengembang sehingga radiusnya bertambah $1 \text{ cm/s}$ ($dr/dt=1$). Kita ingin tahu laju pertambahan volume ($dV/dt$). Kita tahu $V = \frac{4}{3}\pi r^3$. Aturan rantai: $\frac{dV}{dt} = \frac{dV}{dr} \cdot \frac{dr}{dt} = (4\pi r^2) \cdot (1)$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="integral dasar kalkulus antiderivative">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Integral Tak Tentu</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\int x^n dx = \frac{x^{n+1}}{n+1} + C, \quad n \neq -1\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Kebalikan dari turunan (antiderivatif). Digunakan untuk mencari fungsi asli dari laju perubahannya.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika kita tahu fungsi kecepatan mobil $v(t) = 2t$, maka kita bisa mencari fungsi posisinya $s(t)$ dengan mengintegralkannya: $s(t) = \int 2t dt = t^2 + C$. $C$ adalah posisi awalnya.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="integral tentu teorema dasar kalkulus luas di bawah kurva">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Integral Tentu</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \int_{a}^{b} f(x) dx = F(b) - F(a) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Teorema Dasar Kalkulus. Digunakan untuk menghitung total akumulasi atau luas area di bawah kurva $f(x)$ dari $x=a$ sampai $x=b$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika $f(x)$ adalah laju aliran air (liter/detik) ke dalam tangki, maka $\int_{0}^{60} f(x) dx$ adalah total volume air yang masuk ke tangki selama 60 detik pertama.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="deret taylor maclaurin">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Deret Taylor (Umum)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x-a)^n \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mendekati fungsi $f(x)$ di sekitar titik $x=a$ menggunakan jumlahan polinomial. Deret Maclaurin adalah kasus khusus saat $a=0$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Kalkulator Anda tidak 'tahu' nilai $\sin(0.5)$. Ia menggunakan beberapa suku pertama dari deret Maclaurin-nya ($a=0$: $\sin(x) \approx x - x^3/6$) untuk menghitung aproksimasi yang sangat akurat.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="turunan parsial kalkulus multivariabel">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Turunan Parsial</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{\partial f}{\partial x} (x, y) = \lim_{h \to 0} \frac{f(x+h, y) - f(x, y)}{h} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengukur laju perubahan fungsi multivariabel $f(x, y)$ terhadap satu variabel (misal $x$), sementara variabel lain ($y$) dianggap konstan.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika $f(T, P)$ adalah Volume gas sebagai fungsi Suhu ($T$) dan Tekanan ($P$), $\frac{\partial V}{\partial T}$ adalah laju ekspansi gas terhadap suhu pada tekanan konstan.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="vektor gradien turunan parsial">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Vektor Gradien</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \nabla f = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Vektor yang menunjuk ke arah kenaikan tercepat dari fungsi $f$. Besarnya $|\nabla f|$ adalah laju kenaikan tersebut.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika $f(x, y)$ adalah ketinggian bukit pada peta, $\nabla f$ di titik $(x, y)$ adalah panah yang menunjuk ke arah tanjakan paling curam.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="integral lipat dua volume">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Integral Lipat Dua</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \iint_D f(x, y) \,dA \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung volume di bawah permukaan $z = f(x, y)$ dan di atas daerah $D$ pada bidang $xy$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung total massa plat tipis di daerah $D$ jika $f(x, y)$ adalah fungsi kepadatan (massa per unit area).</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="integral lipat tiga massa">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Integral Lipat Tiga</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \iiint_V f(x, y, z) \,dV \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung "hipervolume" 4D, atau lebih umum, total kuantitas (seperti massa) dalam volume 3D $V$ jika $f$ adalah densitas.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung massa total objek 3D (misal, $V$) jika $f(x, y, z)$ adalah fungsi densitasnya (massa per unit volume) di setiap titik.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema green integral garis">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Teorema Green</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \oint_C P \,dx + Q \,dy = \iint_D \left( \frac{\partial Q}{\partial x} - \frac{\partial P}{\partial y} \right) \,dA \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan integral garis di sepanjang kurva tertutup $C$ dengan integral lipat dua di atas daerah $D$ yang dilingkupinya.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung usaha yang dilakukan oleh medan gaya $\vec{F} = (P, Q)$ mengelilingi lintasan tertutup $C$. Jika $\frac{\partial Q}{\partial x} = \frac{\partial P}{\partial y}$, gayanya konservatif dan usahanya nol.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema divergensi gauss fluks">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Teorema Divergensi (Gauss)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \oiint_S \vec{F} \cdot d\vec{S} = \iiint_V (\nabla \cdot \vec{F}) \,dV \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan fluks (aliran) medan vektor $\vec{F}$ yang keluar dari permukaan tertutup $S$ dengan integral dari divergensi ($\nabla \cdot \vec{F}$) di dalam volume $V$ yang dilingkupi $S$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam elektrodinamika (Hukum Gauss), $\nabla \cdot \vec{E} = \rho/\epsilon_0$ (muatan $\rho$ adalah 'sumber' dari medan listrik $\vec{E}$). Teorema ini menghubungkan total muatan di dalam volume $V$ dengan total fluks listrik yang keluar dari permukaannya $S$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema stokes curl sirkulasi">
+                            <h3 class="text-xl font-semibold mb-3 text-red-600">Teorema Stokes</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \oint_C \vec{F} \cdot d\vec{r} = \iint_S (\nabla \times \vec{F}) \cdot d\vec{S} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan sirkulasi medan vektor $\vec{F}$ di sepanjang kurva tertutup $C$ dengan fluks dari *curl* ($\nabla \times \vec{F}$) melalui permukaan $S$ yang dibatasi oleh $C$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam Hukum Ampère (magnet), $\nabla \times \vec{B} = \mu_0 \vec{J}$ (arus listrik $\vec{J}$ adalah 'sumber' dari putaran medan magnet $\vec{B}$). Teorema ini menghubungkan total arus yang menembus permukaan $S$ dengan sirkulasi magnetik di tepinya $C$.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="pd" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-teal-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-water mr-2 text-teal-500"></i>Persamaan Diferensial</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan diferensial orde 1 pertumbuhan peluruhan">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Pertumbuhan Eksponensial</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{dy}{dt} = ky \implies y(t) = y_0 e^{kt} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">PD Orde 1. Menyatakan bahwa laju perubahan ($dy/dt$) sebanding dengan jumlah saat ini ($y$). $k$ adalah konstanta pertumbuhan/peluruhan.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Pertumbuhan populasi bakteri ($k>0$) atau peluruhan zat radioaktif ($k<0$). Jika $k=0.02$ dan populasi awal $y_0=100$, maka $y(t) = 100e^{0.02t}$.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan diferensial orde 2 osilator harmonik pegas">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Osilator Harmonik</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ m\frac{d^2x}{dt^2} + kx = 0 \]
+                            </div>
+                            <p class="text-gray-700 mb-4">PD Orde 2 (Hukum Hooke). Menggambarkan gerak osilasi (getaran) dari suatu massa ($m$) yang terikat pada pegas (konstanta $k$).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Gerakan bandul jam, getaran pegas pada sistem suspensi mobil, atau getaran pada rangkaian listrik RLC. Solusinya berbentuk fungsi $\sin$ dan $\cos$ (gelombang).</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="pd orde 2 non-homogen osilasi paksa">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">PD Orde 2 Non-Homogen</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ ay'' + by' + cy = g(t) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menggambarkan sistem (seperti osilator) yang dipengaruhi oleh gaya eksternal $g(t)$. Solusinya $y = y_h + y_p$ (solusi homogen + partikular).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Rangkaian RLC ($a, b, c$) yang dihubungkan ke sumber tegangan bolak-balik $g(t) = \sin(\omega t)$. Ini memodelkan osilasi paksa dan fenomena resonansi.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="sistem pd linear">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Sistem PD Linear</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{d\vec{x}}{dt} = A\vec{x} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menggambarkan interaksi antara beberapa variabel yang berubah seiring waktu (vektor $\vec{x}$). $A$ adalah matriks interaksi.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Model predator-prey (Lotka-Volterra), di mana laju perubahan populasi mangsa ($x_1$) bergantung pada jumlah pemangsa ($x_2$), dan sebaliknya.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan panas pdp heat equation">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Persamaan Panas (Heat Eq.)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Persamaan Diferensial Parsial (PDP) yang menggambarkan distribusi suhu $u(x, t)$ dalam suatu batang sepanjang $x$ seiring waktu $t$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Memprediksi bagaimana suhu akan merata di sepanjang batang logam yang salah satu ujungnya dipanaskan dan ujung lainnya didinginkan.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan gelombang pdp wave equation">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Persamaan Gelombang</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">PDP yang menggambarkan perambatan gelombang (misal, getaran $u(x, t)$) pada senar atau medium lain dengan kecepatan $c$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Memodelkan getaran senar gitar setelah dipetik, atau perambatan gelombang suara di udara.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="persamaan laplace pdp potensial">
+                            <h3 class="text-xl font-semibold mb-3 text-teal-600">Persamaan Laplace</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \nabla^2 u = \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0 \]
+                            </div>
+                            <p class="text-gray-700 mb-4">PDP yang menggambarkan kondisi tunak (steady-state) atau potensial (misal, $u(x, y)$) di area di mana tidak ada sumber atau serapan.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menemukan distribusi suhu $u$ pada plat logam dalam kondisi tunak (setelah lama didiamkan), atau potensial listrik $u$ di ruang hampa antara dua konduktor.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="statistika-probabilitas" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-yellow-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-chart-bar mr-2 text-yellow-500"></i>Statistika & Probabilitas</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="rata-rata mean statistika">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Rata-rata (Mean)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} = \frac{x_1 + x_2 + ... + x_n}{n}\]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung nilai rata-rata (pusat) dari sekumpulan data ($n$ data).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung nilai rata-rata kelas. Jika nilai 3 siswa adalah 70, 80, dan 90, maka rata-ratanya adalah $(70+80+90)/3 = 80$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="median statistika">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Median</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \text{Nilai tengah data terurut} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Nilai tengah dari data yang telah diurutkan. Lebih tahan terhadap nilai ekstrem (outlier) daripada mean.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Mencari median gaji. Jika 5 karyawan gajinya [3, 4, 5, 6, 100] (juta). Rata-ratanya 23.6 juta (terdistorsi oleh 100), tapi mediannya (data ke-3) adalah 5 juta, yang lebih mewakili.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="standar deviasi varians simpangan baku">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Standar Deviasi (Simpangan Baku)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{N}} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengukur seberapa tersebar data dari nilai rata-ratanya ($\bar{x}$). Akar kuadrat dari Varians.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam investasi, standar deviasi rendah berarti risiko rendah (harga stabil dekat rata-rata). Standar deviasi tinggi (misal, cryptocurrency) berarti risiko tinggi (harga sangat fluktuatif).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="probabilitas peluang dasar">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Probabilitas Dasar</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ P(A) = \frac{\text{Jumlah kejadian A}}{\text{Jumlah total hasil}} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung kemungkinan terjadinya suatu kejadian ($A$). Nilainya selalu antara 0 (mustahil) dan 1 (pasti terjadi).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Peluang mendapat angka '5' saat melempar dadu bersisi 6. Hanya ada 1 kejadian '5', dan 6 total hasil. Maka $P(5) = 1/6 \approx 16.7\%$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="distribusi normal pdf kurva lonceng">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Distribusi Normal (PDF)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Distribusi probabilitas kontinu (Kurva Lonceng) yang paling umum, ditentukan oleh rata-rata ($\mu$) dan standar deviasi ($\sigma$).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Tinggi badan manusia, skor IQ, dan kesalahan pengukuran di laboratorium sering mengikuti distribusi normal.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema limit pusat central limit theorem clt">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Teorema Limit Pusat (CLT)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \bar{X}_n \xrightarrow{d} N\left(\mu, \frac{\sigma^2}{n}\right) \text{ saat } n \to \infty \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menyatakan bahwa distribusi dari rata-rata sampel ($\bar{X}_n$) akan mendekati distribusi normal, terlepas dari distribusi aslinya, selama ukuran sampel ($n$) besar.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Ini adalah dasar mengapa polling (survei) berfungsi. Dengan mengambil sampel acak yang cukup besar, kita dapat menggunakan statistik normal untuk memperkirakan rata-rata populasi (misal, persentase pemilih).</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="regresi linear sederhana korelasi">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Regresi Linear Sederhana</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ y = \beta_0 + \beta_1 x + \epsilon \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Metode statistik untuk memodelkan hubungan antara variabel dependen ($y$) dan variabel independen ($x$) sebagai garis lurus.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Memprediksi harga rumah ($y$) berdasarkan luasnya ($x$). $\beta_1$ adalah tambahan harga untuk setiap m² tambahan, dan $\beta_0$ adalah harga dasar.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="distribusi poisson pmf">
+                            <h3 class="text-xl font-semibold mb-3 text-yellow-600">Distribusi Poisson</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Distribusi probabilitas diskrit yang menghitung peluang ($P$) terjadinya $k$ peristiwa dalam interval waktu/ruang, jika rata-rata ($\lambda$) peristiwa diketahui.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Jika sebuah call center rata-rata menerima $\lambda=5$ panggilan per jam, rumus ini menghitung peluang menerima $k=0$ panggilan (sepi) atau $k=10$ panggilan (sibuk) dalam satu jam.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="matriks" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-indigo-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-th mr-2 text-indigo-500"></i>Matriks & Vektor</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="perkalian matriks">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Perkalian Matriks (AB)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ (AB)_{ij} = \sum_{k=1}^{n} A_{ik} B_{kj} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengalikan matriks A (ukuran $m \times n$) dengan B (ukuran $n \times p$). Elemen $ij$ pada hasil adalah *dot product* dari baris $i$ (A) dan kolom $j$ (B).</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam grafika komputer, posisi 3D sebuah objek (vektor) dikalikan dengan matriks rotasi untuk mendapatkan posisi barunya setelah diputar.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="determinan matriks 2x2">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Determinan (Matriks 2x2)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \det(A) = \begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Nilai skalar yang bisa dihitung dari matriks persegi. Jika determinan = 0, matriks tidak memiliki invers.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan untuk menyelesaikan sistem persamaan linear. Jika Anda punya sistem $ax+by=e$ dan $cx+dy=f$, determinan matriks koefisien ($ad-bc$) menentukan apakah ada solusi unik.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="dot product perkalian titik vektor">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Dot Product (Vektor)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \vec{a} \cdot \vec{b} = |\vec{a}| |\vec{b}| \cos \theta = a_1 b_1 + a_2 b_2 \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Perkalian dua vektor yang menghasilkan skalar (angka). Berguna untuk mencari sudut ($\theta$) antara dua vektor.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam fisika, "Usaha" ($W$) adalah dot product antara Vektor Gaya ($\vec{F}$) dan Vektor Perpindahan ($\vec{d}$). $W = \vec{F} \cdot \vec{d}$. Jika gaya tegak lurus (90°) perpindahan, $\cos(90^\circ)=0$, usahanya nol.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="cross product perkalian silang vektor">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Cross Product (Vektor 3D)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ |\vec{a} \times \vec{b}| = |\vec{a}| |\vec{b}| \sin \theta \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Perkalian dua vektor yang menghasilkan vektor baru yang tegak lurus terhadap kedua vektor asli.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam fisika, "Momen Gaya" (torsi) adalah cross product Vektor Lengan Gaya ($\vec{r}$) dan Vektor Gaya ($\vec{F}$). $\vec{\tau} = \vec{r} \times \vec{F}$.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="nilai eigen vektor eigen eigenvalue eigenvector">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Nilai Eigen & Vektor Eigen</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ A\vec{v} = \lambda\vec{v} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Untuk matriks $A$, vektor eigen ($\vec{v}$) adalah vektor yang arahnya tidak berubah (hanya diskalakan) oleh $\lambda$ (nilai eigen) ketika dikalikan dengan $A$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan dalam algoritma Google PageRank (vektor eigen adalah 'pentingnya' halaman) dan dalam analisis getaran (nilai eigen adalah frekuensi alami sistem).</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="transformasi linear matriks">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Transformasi Linear</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ T(\vec{v}) = A\vec{v} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Fungsi ($T$) yang memetakan vektor ke vektor lain menggunakan perkalian matriks ($A$). Mempertahankan operasi (penjumlahan dan perkalian skalar).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Matriks $A = \begin{bsmallmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bsmallmatrix}$ adalah transformasi linear yang memutar vektor $\vec{v}$ sebesar sudut $\theta$ di bidang 2D.</p>
+                            </div>
+                        </div>
+
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="dekomposisi svd singular value decomposition">
+                            <h3 class="text-xl font-semibold mb-3 text-indigo-600">Dekomposisi SVD</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ A = U\Sigma V^T \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Memfaktorkan matriks $A$ (bahkan yang non-persegi) menjadi tiga matriks: $U$ (rotasi), $\Sigma$ (penskalaan), dan $V^T$ (rotasi).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan secara luas dalam kompresi gambar. Dengan membuang nilai singular terkecil di $\Sigma$, kita bisa merekonstruksi gambar $A$ yang 'cukup mirip' dengan data yang jauh lebih sedikit.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div id="kombinatorika-teobil" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-lime-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-dice mr-2 text-lime-500"></i>Kombinatorika & Teori Bilangan</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="permutasi urutan penting">
+                            <h3 class="text-xl font-semibold mb-3 text-lime-600">Permutasi</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ P(n, k) = \frac{n!}{(n-k)!} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung jumlah cara memilih $k$ objek dari $n$ objek di mana **urutan diperhitungkan**.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Berapa banyak cara 3 orang (k=3) bisa finis sebagai Juara 1, 2, dan 3 dalam lomba lari 10 orang (n=10)? $P(10, 3) = 10! / (10-3)! = 10 \times 9 \times 8 = 720$ cara.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="kombinasi urutan tidak penting">
+                            <h3 class="text-xl font-semibold mb-3 text-lime-600">Kombinasi</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ C(n, k) = \binom{n}{k} = \frac{n!}{k!(n-k)!} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung jumlah cara memilih $k$ objek dari $n$ objek di mana **urutan tidak diperhitungkan**.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Berapa banyak cara memilih 3 (k=3) pemain untuk satu tim dari 10 (n=10) orang pendaftar? Memilih (A, B, C) sama saja dengan (C, B, A). $C(10, 3) = 10! / (3! \times 7!) = 120$ cara.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema kecil fermat modulo">
+                            <h3 class="text-xl font-semibold mb-3 text-lime-600">Teorema Kecil Fermat</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ a^{p-1} \equiv 1 \pmod{p} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Jika $p$ adalah bilangan prima dan $a$ tidak habis dibagi $p$, maka $a$ pangkat ($p-1$) akan kongruen dengan 1 (bersisa 1) jika dibagi $p$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Ini adalah dasar dari kriptografi RSA. Misalnya, $2^{7-1} = 2^6 = 64$. Jika dibagi 7, $64 = (9 \times 7) + 1$, jadi $64 \equiv 1 \pmod{7}$.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="fungsi euler totient phi">
+                            <h3 class="text-xl font-semibold mb-3 text-lime-600">Fungsi Euler Totient</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \phi(n) = n \prod_{p|n} \left(1 - \frac{1}{p}\right) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung banyaknya bilangan bulat positif kurang dari atau sama dengan $n$ yang relatif prima terhadap $n$. ($p$ adalah faktor prima dari $n$).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Untuk $n=10$ (faktor prima 2, 5). $\phi(10) = 10(1-1/2)(1-1/5) = 10(1/2)(4/5) = 4$. Bilangan tersebut adalah {1, 3, 7, 9}. Sangat penting dalam kriptografi RSA.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transformasi" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-pink-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-wave-square mr-2 text-pink-500"></i>Transformasi</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="transformasi laplace integral">
+                            <h3 class="text-xl font-semibold mb-3 text-pink-600">Transformasi Laplace</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \mathcal{L}\{f(t)\} = F(s) = \int_{0}^{\infty} e^{-st} f(t) dt \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengubah fungsi dalam domain waktu ($t$), $f(t)$, menjadi fungsi dalam domain frekuensi kompleks ($s$), $F(s)$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam teknik elektro, transformasi ini menyederhanakan analisis rangkaian RLC. Persamaan diferensial (domain $t$) yang rumit diubah menjadi persamaan aljabar (domain $s$) yang mudah diselesaikan.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="transformasi fourier integral sinyal audio">
+                            <h3 class="text-xl font-semibold mb-3 text-pink-600">Transformasi Fourier</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \mathcal{F}\{f(t)\} = \hat{f}(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} dt \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Memecah sinyal (fungsi waktu, $f(t)$) menjadi frekuensi-frekuensi penyusunnya (domain $\omega$).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan dalam pemrosesan audio (file MP3) dan gambar (file JPEG). Suara atau gambar dipecah menjadi komponen frekuensinya, dan frekuensi yang tidak penting (tidak terdengar/terlihat) dibuang untuk mengompres data.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="transformasi z sinyal diskrit">
+                            <h3 class="text-xl font-semibold mb-3 text-pink-600">Transformasi-Z</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ X(z) = \mathcal{Z}\{x[n]\} = \sum_{n=-\infty}^{\infty} x[n] z^{-n} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Versi waktu-diskrit dari Transformasi Laplace. Mengubah sinyal diskrit $x[n]$ (sampel) menjadi fungsi $X(z)$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Fundamental dalam Digital Signal Processing (DSP). Digunakan untuk menganalisis dan merancang filter digital (seperti equalizer audio) pada hardware digital (komputer, smartphone).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analisis-kompleks" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-purple-800 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-magic mr-2 text-purple-800"></i>Analisis Kompleks</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="rumus euler kompleks">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-700">Rumus Euler</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ e^{i\theta} = \cos \theta + i \sin \theta \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghubungkan fungsi eksponensial kompleks dengan fungsi trigonometri. $i = \sqrt{-1}$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menyatukan analisis gelombang. Gelombang $\cos \theta$ dapat dilihat sebagai bagian real dari $e^{i\theta}$. Ini menyederhanakan banyak perhitungan dalam fisika dan teknik elektro.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="syarat cauchy-riemann fungsi analitik">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-700">Syarat Cauchy-Riemann</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{\partial u}{\partial x} = \frac{\partial v}{\partial y} \quad \text{dan} \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Syarat yang harus dipenuhi oleh bagian real ($u$) dan imajiner ($v$) agar fungsi $f(z) = u + iv$ dapat diturunkan secara kompleks (analitik).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam aliran fluida 2D, jika syarat ini terpenuhi, alirannya 'ideal' (tanpa rotasi dan tanpa sumber). Sangat penting dalam aerodinamika.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="rumus integral cauchy">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-700">Rumus Integral Cauchy</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ f(a) = \frac{1}{2\pi i} \oint_C \frac{f(z)}{z-a} \,dz \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menyatakan bahwa nilai fungsi analitik $f$ di titik $a$ sepenuhnya ditentukan oleh nilai-nilainya di batas $C$ yang mengelilingi $a$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Ini adalah alat komputasi yang sangat kuat. Memungkinkan kita menghitung integral yang sulit di domain real dengan mengubahnya menjadi integral kontur di domain kompleks.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="teorema residu integral kontur">
+                            <h3 class="text-xl font-semibold mb-3 text-purple-700">Teorema Residu</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \oint_C f(z) \,dz = 2\pi i \sum_{k} \text{Res}(f, a_k) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menghitung integral kontur tertutup $C$ dengan menjumlahkan 'residu' (koefisien deret Laurent) dari $f(z)$ di dalam $C$.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Metode utama untuk menghitung integral tak wajar yang rumit di kalkulus real, seperti $\int_{-\infty}^{\infty} \frac{1}{x^2+1} dx$.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="geo-differensial" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-emerald-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-bezier-curve mr-2 text-emerald-500"></i>Geometri Differensial</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="kelengkungan kurva curvature">
+                            <h3 class="text-xl font-semibold mb-3 text-emerald-600">Kelengkungan Kurva (2D)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \kappa = \frac{|y''|}{(1 + (y')^2)^{3/2}} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Mengukur seberapa cepat arah kurva $y=f(x)$ berubah. $\kappa$ besar berarti tikungan tajam, $\kappa=0$ berarti garis lurus.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam desain jalan raya atau rel kereta, kelengkungan $(\kappa)$ harus dibatasi agar kendaraan tidak selip saat menikung dengan kecepatan tinggi.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="rumus frenet-serret kelengkungan torsi">
+                            <h3 class="text-xl font-semibold mb-3 text-emerald-600">Rumus Frenet-Serret (3D)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \frac{d}{ds} \begin{bmatrix} \vec{T} \\ \vec{N} \\ \vec{B} \end{bmatrix} = \begin{bmatrix} 0 & \kappa & 0 \\ -\kappa & 0 & \tau \\ 0 & -\tau & 0 \end{bmatrix} \begin{bmatrix} \vec{T} \\ \vec{N} \\ \vec{B} \end{bmatrix} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Menjelaskan bagaimana vektor Tangen ($\vec{T}$), Normal ($\vec{N}$), dan Binormal ($\vec{B}$) berubah sepanjang kurva 3D. $\kappa$ adalah kelengkungan, $\tau$ adalah torsi (pelintiran).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Memodelkan bentuk DNA (double helix) atau pergerakan roller coaster, di mana ia tidak hanya menikung ($\kappa$) tetapi juga melintir ($\tau$).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analisis-numerik" class="category-section mb-8">
+                    <h2 class="category-toggle-btn text-2xl font-bold text-gray-800 border-b-2 border-gray-500 pb-2 p-4 relative cursor-pointer hover:bg-gray-50 transition-all rounded-t-lg">
+                        <span><i class="fas fa-laptop-code mr-2 text-gray-500"></i>Analisis Numerik</span>
+                        <i class="category-chevron fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-300"></i>
+                    </h2>
+                    <div class="category-content grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="metode newton-raphson pencarian akar">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-600">Metode Newton-Raphson</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Metode iteratif untuk menemukan akar (solusi) dari persamaan $f(x)=0$ dengan sangat cepat, menggunakan tebakan awal $x_0$.</p>
+                            <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Bagaimana komputer menghitung $\sqrt{2}$? Ia mencari akar dari $f(x) = x^2 - 2 = 0$. Dengan tebakan $x_0=1.5$, iterasi berikutnya adalah $x_1 = 1.5 - (1.5^2-2)/(2 \times 1.5) \approx 1.4167$.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="aturan trapezoidal integrasi numerik">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-600">Aturan Trapezoidal</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \int_a^b f(x) dx \approx \frac{h}{2} \sum_{i=1}^n (f(x_{i-1}) + f(x_i)) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Metode integrasi numerik yang mendekati area di bawah kurva dengan menggunakan jumlahan luas trapesium.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Menghitung total jarak tempuh mobil jika Anda hanya memiliki data kecepatan (speedometer) setiap 5 detik. Anda mendekati area di bawah kurva kecepatan-waktu.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="aturan simpson integrasi numerik">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-600">Aturan Simpson 1/3</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ \int_a^b f(x) dx \approx \frac{h}{3} [f(x_0) + 4f(x_1) + 2f(x_2) + \dots] \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Metode integrasi numerik yang lebih akurat daripada Trapezoidal, karena mendekati kurva menggunakan parabola, bukan garis lurus.</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Digunakan dalam rekayasa sipil untuk menghitung volume galian tanah berdasarkan pengukuran luas penampang di beberapa titik. Memberikan estimasi volume yang lebih akurat.</p>
+                            </div>
+                        </div>
+                        <div class="formula-card bg-white rounded-lg shadow-md p-6 overflow-hidden" data-name="metode euler pd numerik">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-600">Metode Euler (PD)</h3>
+                            <div class="text-lg mb-4 formula-display">
+                                \[ y_{n+1} = y_n + h \cdot f(t_n, y_n) \]
+                            </div>
+                            <p class="text-gray-700 mb-4">Metode numerik paling dasar untuk mencari solusi PD $\frac{dy}{dt} = f(t, y)$. Memprediksi nilai $y$ berikutnya ($y_{n+1}$) berdasarkan nilai saat ini ($y_n$).</p>
+                             <button class="example-toggle-btn w-full text-left px-4 py-2 mt-4 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-all duration-200">
+                                Lihat Contoh <i class="fas fa-chevron-down float-right mt-1"></i>
+                            </button>
+                            <div class="example-content">
+                                <p class="text-gray-600 text-sm"><strong>Contoh:</strong> Dalam simulasi fisika (game engine), jika Anda tahu posisi saat ini ($y_n$) dan kecepatan ($f(t_n, y_n)$), Anda bisa memprediksi posisi di frame berikutnya ($y_{n+1}$) setelah jeda waktu $h$.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="noResults" class="hidden mt-12 text-center py-10 bg-white rounded-lg shadow-md">
+                    <i class="fas fa-search fa-3x text-gray-400 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600">Rumus tidak ditemukan</h3>
+                    <p class="text-gray-500 mt-2">Coba gunakan kata kunci yang berbeda.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <p class="text-lg font-semibold">Mathematics Formula | © dvalgtr</p>
+                <p class="text-gray-400 mt-2 text-sm">All rights reserved.</p>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub"><i class="fab fa-github fa-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+    // Menjalankan skrip setelah DOM sepenuhnya dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Cache elemen DOM untuk performa lebih baik
+        const categoryList = document.getElementById('categoryList');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const categorySections = document.querySelectorAll('.category-section');
+        const formulaCards = document.querySelectorAll('.formula-card');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+        
+        // Inisialisasi: Atur kategori 'Semua Rumus' sebagai aktif
+        const allBtn = categoryList.querySelector('[data-category="all"]');
+        if (allBtn) {
+            allBtn.classList.add('active-category');
+        }
+
+        // --- Fungsi Debounce ---
+        // Menunda eksekusi fungsi pencarian hingga pengguna selesai mengetik
+        function debounce(func, delay = 250) {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+        
+        // --- Fungsi Filter Kategori ---
+        function filterCategory(activeCategory) {
+            // Tampilkan semua kartu terlebih dahulu
+            formulaCards.forEach(card => card.style.display = 'block');
+            
+            // Tutup semua kategori
+            document.querySelectorAll('.category-toggle-btn.active').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.category-content.visible').forEach(content => content.classList.remove('visible'));
+
+            if (activeCategory === 'all') {
+                // Tampilkan semua section
+                categorySections.forEach(section => {
+                    section.style.display = 'block';
+                    // Buka semua kategori jika 'Semua Rumus' dipilih
+                    const btn = section.querySelector('.category-toggle-btn');
+                    const content = section.querySelector('.category-content');
+                    if(btn && content) {
+                        btn.classList.add('active');
+                        content.classList.add('visible');
+                    }
+                });
+            } else {
+                // Sembunyikan semua section
+                categorySections.forEach(section => section.style.display = 'none');
+                
+                // Tampilkan section yang dipilih
+                const activeSection = document.getElementById(activeCategory);
+                if (activeSection) {
+                    activeSection.style.display = 'block';
+                    // Buka kategori yang aktif
+                    const btn = activeSection.querySelector('.category-toggle-btn');
+                    const content = activeSection.querySelector('.category-content');
+                    if(btn && content) {
+                        btn.classList.add('active');
+                        content.classList.add('visible');
+                    }
+                }
+            }
+            
+            // Sembunyikan pesan 'tidak ditemukan'
+            noResults.style.display = 'none';
+
+            // Sembunyikan semua contoh yang mungkin terbuka
+            document.querySelectorAll('.example-content.example-visible').forEach(content => {
+                content.classList.remove('example-visible');
+            });
+            document.querySelectorAll('.example-toggle-btn.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
+        // --- Logika Event Kategori ---
+        categoryList.addEventListener('click', (e) => {
+            const targetBtn = e.target.closest('.category-btn');
+            if (!targetBtn) return; // Klik bukan pada tombol
+
+            const category = targetBtn.dataset.category;
+
+            // Update status aktif pada tombol
+            categoryBtns.forEach(btn => btn.classList.remove('active-category'));
+            targetBtn.classList.add('active-category');
+
+            // Reset pencarian saat kategori diubah
+            searchInput.value = '';
+            removeHighlightFromAllCards();
+            
+            // Terapkan filter
+            filterCategory(category);
+        });
+
+        // --- Fungsi Pencarian ---
+        const handleSearch = (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            
+            // Hapus highlight dari semua kartu sebelum pencarian baru
+            removeHighlightFromAllCards();
+            
+            let foundResults = false;
+            
+            // Jika ada kata kunci, reset filter kategori ke 'all'
+            if (searchTerm.length > 0) {
+                // Tampilkan semua section
+                categorySections.forEach(section => section.style.display = 'block');
+                categoryBtns.forEach(btn => btn.classList.remove('active-category'));
+                
+                const allBtn = categoryList.querySelector('[data-category="all"]');
+                if (allBtn) {
+                    allBtn.classList.add('active-category');
+                }
+                
+                // Buka semua kategori saat mencari
+                document.querySelectorAll('.category-toggle-btn').forEach(btn => btn.classList.add('active'));
+                document.querySelectorAll('.category-content').forEach(content => content.classList.add('visible'));
+
+            } else {
+                // Jika pencarian kosong, kembalikan ke filter kategori yang aktif
+                const activeCategory = categoryList.querySelector('.active-category').dataset.category || 'all';
+                filterCategory(activeCategory);
+                return; // Selesai
+            }
+
+            // Lakukan pencarian
+            formulaCards.forEach(card => {
+                const cardName = card.dataset.name.toLowerCase();
+                const cardTitle = card.querySelector('h3').textContent.toLowerCase();
+                const cardContent = card.querySelector('p').textContent.toLowerCase();
+                const exampleContentEl = card.querySelector('.example-content p');
+                const exampleContent = exampleContentEl ? exampleContentEl.textContent.toLowerCase() : '';
+                
+                const isMatch = cardName.includes(searchTerm) || 
+                                cardTitle.includes(searchTerm) || 
+                                cardContent.includes(searchTerm) ||
+                                exampleContent.includes(searchTerm);
+
+                if (isMatch) {
+                    card.style.display = 'block';
+                    foundResults = true;
+                    // Terapkan highlight HANYA pada teks, bukan pada rumus MathJax
+                    highlightText(card.querySelector('h3'), searchTerm);
+                    highlightText(card.querySelector('p'), searchTerm);
+                    highlightText(exampleContentEl, searchTerm); // Highlight juga contoh
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Tampilkan/sembunyikan pesan 'tidak ditemukan'
+            noResults.style.display = foundResults ? 'none' : 'block';
+            
+            // Sembunyikan judul kategori yang tidak memiliki hasil pencarian
+            categorySections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.formula-card[style="display: block"]');
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        };
+        
+        // Terapkan debounce pada event input pencarian
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+
+        // --- Fungsi Bantuan Highlight ---
+        // (Dioptimalkan untuk tidak merusak render MathJax)
+
+        // Mendapatkan semua node teks di dalam elemen
+        function getTextNodes(element) {
+            if (!element) return [];
+            const textNodes = [];
+            const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            while (node = walk.nextNode()) {
+                textNodes.push(node);
+            }
+            return textNodes;
+        }
+
+        // Menerapkan highlight
+        function highlightText(element, searchTerm) {
+            if (!element || !searchTerm) return;
+            const textNodes = getTextNodes(element);
+            const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+            
+            textNodes.forEach(node => {
+                // Pastikan tidak berada di dalam tag <style> atau <script>
+                if (node.parentElement.tagName === 'STYLE' || node.parentElement.tagName === 'SCRIPT') return;
+                
+                // Hindari node di dalam .formula-display
+                if (node.closest('.formula-display')) return;
+
+                const text = node.textContent;
+                if (regex.test(text)) {
+                    const fragment = document.createDocumentFragment();
+                    const parts = text.split(regex);
+                    
+                    parts.forEach(part => {
+                        if (part.match(regex)) {
+                            const span = document.createElement('span');
+                            span.className = 'search-highlight';
+                            span.textContent = part;
+                            fragment.appendChild(span);
+                        } else {
+                            fragment.appendChild(document.createTextNode(part));
+                        }
+                    });
+                    node.parentNode.replaceChild(fragment, node);
+                }
+            });
+        }
+
+        // Menghapus highlight
+        function removeHighlight(element) {
+            if (!element) return;
+            const highlightedSpans = element.querySelectorAll('span.search-highlight');
+            
+            highlightedSpans.forEach(span => {
+                const parent = span.parentNode;
+                if (parent) {
+                    parent.replaceChild(document.createTextNode(span.textContent), span);
+                    parent.normalize(); // Menggabungkan node teks yang berdekatan
+                }
+            });
+        }
+        
+        function removeHighlightFromAllCards() {
+             formulaCards.forEach(card => {
+                removeHighlight(card.querySelector('h3'));
+                removeHighlight(card.querySelector('p'));
+                removeHighlight(card.querySelector('.example-content p'));
+            });
+        }
+        
+        // Helper untuk escape regex
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& berarti seluruh string yang cocok
+        }
+
+        // --- Logika "Lihat Contoh" & Kategori Collapsible ---
+        const mainContent = document.querySelector('main');
+        mainContent.addEventListener('click', (e) => {
+            
+            // --- Cek Tombol "Lihat Contoh" ---
+            const exampleToggleBtn = e.target.closest('.example-toggle-btn');
+            if (exampleToggleBtn) {
+                e.stopPropagation(); // Mencegah event bubbling
+                const card = exampleToggleBtn.closest('.formula-card');
+                const exampleContent = card.querySelector('.example-content');
+                if (exampleContent) {
+                    exampleToggleBtn.classList.toggle('active');
+                    exampleContent.classList.toggle('example-visible');
+                }
+                return; // Hentikan eksekusi
+            }
+            
+            // --- Cek Tombol Judul Kategori ---
+            const categoryToggleBtn = e.target.closest('.category-toggle-btn');
+            if (categoryToggleBtn) {
+                e.stopPropagation(); // Mencegah event bubbling
+                const content = categoryToggleBtn.nextElementSibling; // Harusnya ini .category-content
+                
+                if (content && content.classList.contains('category-content')) {
+                    categoryToggleBtn.classList.toggle('active');
+                    content.classList.toggle('visible');
+                }
+                return; // Hentikan eksekusi
+            }
+        });
+
+        // --- Inisialisasi: Buka kategori pertama (Aritmetika) saat dimuat ---
+        // atau panggil filterCategory('all') untuk membuka semua
+        // filterCategory('all');
+        
+        // Membuka kategori pertama saja:
+        const firstCategoryBtn = document.querySelector('.category-toggle-btn');
+        if (firstCategoryBtn) {
+            const firstCategoryContent = firstCategoryBtn.nextElementSibling;
+            if (firstCategoryContent && firstCategoryContent.classList.contains('category-content')) {
+                firstCategoryBtn.classList.add('active');
+                firstCategoryContent.classList.add('visible');
+            }
+        }
+
+    });
+    </script>
+</body>
+</html>
